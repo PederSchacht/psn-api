@@ -81,5 +81,3 @@ test:
 production:
   <<: *default
   database: psnapi_production
-  username: psnapi
-  password: <%= ENV['PSNAPI_DATABASE_PASSWORD'] %>
