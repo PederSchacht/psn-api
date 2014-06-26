@@ -6,9 +6,7 @@ class UserToken < ActiveRecord::Base
     post_login
     get_auth_code
     get_oauth_token
-    oauth_token = ''
-    refresh_token = ''
-    tokens = Hash['oauth_token' => oauth_token, 'refresh_token' => refresh_token]
+    tokens = Hash['oauth_token' => @oauth_token, 'refresh_token' => @refresh_token]
   end
   def self.init_login
     uri = ('https://auth.api.sonyentertainmentnetwork.com/2.0/oauth/authorize?response_type=code&service_entity=urn:service-entity:psn&returnAuthCode=true&cltm=1399637146935&redirect_uri=com.scee.psxandroid.scecompcall://redirect&client_id=b0d0d7ad-bb99-4ab1-b25e-afa0c76577b0&scope=psn:sceapp')
@@ -18,7 +16,6 @@ class UserToken < ActiveRecord::Base
       @location = e.response["location"]
       @cookie = e.response['set-cookie']
     end
-    puts @location
   end
   def self.post_login
     uri = ('https://auth.api.sonyentertainmentnetwork.com/login.do')
@@ -32,7 +29,6 @@ class UserToken < ActiveRecord::Base
                                          'Cookie' => @cookie })
     rescue HTTParty::RedirectionTooDeep => e
       @location = e.response["location"]
-      puts @location
     end
   end
   def self.get_auth_code
@@ -44,9 +40,20 @@ class UserToken < ActiveRecord::Base
       enc_uri = e.response.header["location"]
     end
     uri_w_auth_code = URI.unescape(enc_uri)
-    auth_code = uri_w_auth_code[(uri_w_auth_code.index("authCode=")+9),6]
-    puts auth_code
+    @auth_code = uri_w_auth_code[(uri_w_auth_code.index("authCode=")+9),6]
   end
   def self.get_oauth_token
+    uri = ('https://auth.api.sonyentertainmentnetwork.com/2.0/oauth/token')
+    response = UserToken.post(uri,
+                             :body => { 'grant_type'    => 'authorization_code',
+                                        'client_id'     => 'b0d0d7ad-bb99-4ab1-b25e-afa0c76577b0',
+                                        'client_secret' => 'Zo4y8eGIa3oazIEp',
+                                        'redirect_uri'  => 'com.scee.psxandroid.scecompcall://redirect',
+                                        'state'         => 'x',
+                                        'scope'         => 'psn:sceapp',
+                                        'duid'          => '00000005006401283335353338373035333434333134313a433635303220202020202020202020202020202020',
+                                        'code'          => @auth_code })
+    @oauth_token = response["access_token"]
+    @refresh_token = response["refresh_token"]
   end
 end
