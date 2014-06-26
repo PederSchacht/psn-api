@@ -8,6 +8,7 @@ class UserToken < ActiveRecord::Base
     get_oauth_token
     tokens = Hash['oauth_token' => @oauth_token, 'refresh_token' => @refresh_token]
   end
+  private
   def self.init_login
     uri = ('https://auth.api.sonyentertainmentnetwork.com/2.0/oauth/authorize?response_type=code&service_entity=urn:service-entity:psn&returnAuthCode=true&cltm=1399637146935&redirect_uri=com.scee.psxandroid.scecompcall://redirect&client_id=b0d0d7ad-bb99-4ab1-b25e-afa0c76577b0&scope=psn:sceapp')
     begin
