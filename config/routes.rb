@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get '/psn/:user_id', to: 'psn#profile'
+  get '/psn/:user_id/trophies', to: 'psn#trophies'
+  get '/psn/:user_id/:game_id', to: 'psn#game'
+  get '/psn/:user_id/:game_id/:trophy_id', to: 'psn#trophy'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
